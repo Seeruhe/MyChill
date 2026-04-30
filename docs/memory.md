@@ -1,14 +1,13 @@
-active_area: app metadata and publishing
-current_task: Rename the app to MyChill and prepare GitHub publishing.
+active_area: AI security boundary
+current_task: Move Groq API key usage behind a backend route.
 relevant_files:
-  - src/App.tsx
+  - api/ask-artist.js
+  - src/services/groqService.ts
+  - vite.config.ts
   - vercel.json
-  - src/components/IntroOverlay.tsx
-  - src/components/gallery/galleryConstants.ts
-  - src/data/musicLibrary.ts
 assumptions:
-  - Home should avoid internal/browser vertical scrolling on common desktop viewport heights by using a more compact layout.
-  - Vercel production builds should use npm workspaces and output the root `dist` directory.
+  - The project uses Groq, not Grok, for the AI assistant.
+  - Groq calls should be server-side for production because the repo is public and deployed to Vercel.
 done:
   - Added the Nujabes/Shing02 Luv(sic) sequence to the local track catalog.
   - Replaced mojibake Chinese labels in App and IntroOverlay with readable Chinese.
@@ -40,7 +39,18 @@ done:
   - Verified with npm run lint and npm run build.
   - Verified with `rg` that `MyChill` is present in source and generated HTML titles.
   - Verified the GitHub repo with `gh repo view ryanyeong/MyChill`.
+  - Confirmed no tracked source file contains a real `gsk_` key.
+  - Confirmed the previous Vite config injected `GROQ_API_KEY` into the frontend bundle, creating production exposure risk.
+  - Added `api/ask-artist.js` as the server-side Groq/Llama route.
+  - Updated `src/services/groqService.ts` so the browser calls `/api/ask-artist` instead of Groq directly.
+  - Removed `GROQ_API_KEY` injection from the root Vite config.
+  - Removed the unused `GEMINI_API_KEY` injection from the 3D stack Vite config as additional hardening.
+  - Updated `.env.example` to mark `GROQ_API_KEY` as server-only.
+  - Updated README to note that local AI API testing should use `vercel dev --listen 3000`.
+  - Rewrote mojibake `AGENTS.md` with the current backend Groq boundary.
+  - Removed stale Gemini key instructions from the stack README and env example.
 in_progress:
-  - none
-blockers: none
-next_step: Commit and push this memory update if desired.
+  - commit, push, and deploy the backend migration
+blockers:
+  - The previously used Groq key should still be rotated after deploy because old frontend deployments may have exposed it.
+next_step: Commit and push the server-side Groq boundary, then redeploy Vercel production.

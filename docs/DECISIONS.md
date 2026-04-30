@@ -31,3 +31,13 @@ Decision: Add Stack page light/dark mode through parent-to-iframe `postMessage` 
 Reason: The 3D album stack remains iframe-isolated, so theme state should cross the boundary through an explicit message contract. This preserves stack scroll position, card preview/full state, and interaction continuity.
 
 Impact: `StackScreen` owns the light/dark toggle and sends `{ type: "STACK_THEME", theme }`; `3d-album-stack` listens for that message and applies `data-theme` to its root wrapper.
+
+## 2026-04-30: Server-Side Groq Boundary
+
+Decision: Move Groq/Llama assistant calls from the Vite frontend bundle to the Vercel serverless API route `/api/ask-artist`.
+
+Reason: The previous Vite `define` configuration injected `GROQ_API_KEY` into browser JavaScript at build time. That is acceptable only for quick demos, not for a public production deployment.
+
+Impact: `src/services/groqService.ts` now sends artist questions to the local API route. `api/ask-artist.js` reads `GROQ_API_KEY` server-side, builds the archivist prompt, calls Groq, and returns only the assistant answer to the browser.
+
+Follow-up hardening: Remove unused frontend AI-key injection from the `3d-album-stack` Vite config as well, so future environment variables are not accidentally bundled into the iframe app.

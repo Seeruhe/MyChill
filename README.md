@@ -15,6 +15,9 @@ View your app in AI Studio: https://ai.studio/apps/12b0ab29-3424-4666-9930-b58b5
 
 1. Install dependencies:
    `npm install`
-2. Set the `GROQ_API_KEY` in [.env.local](.env.local) to your Groq API key
+2. Set the server-only `GROQ_API_KEY` in `.env.local` for local API testing.
 3. Run the app:
    `npm run dev`
+
+For the Groq-powered archive assistant, use Vercel's local runtime so `/api/ask-artist` is available:
+`vercel dev --listen 3000`
