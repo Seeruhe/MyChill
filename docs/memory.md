@@ -33,11 +33,14 @@ done:
   - Added generated build outputs and local deployment/config secrets to `.gitignore`.
   - Created the first local commit `cb5092d Initial MyChill app`.
   - Installed GitHub CLI `gh` via winget.
-  - GitHub push is blocked until `gh auth login` is completed for the user's GitHub account.
+  - GitHub CLI authenticated successfully as `ryanyeong`.
+  - Created the public GitHub repository `ryanyeong/MyChill`.
+  - Added `origin` as `https://github.com/ryanyeong/MyChill.git`.
+  - Pushed local `main` to `origin/main`.
   - Verified with npm run lint and npm run build.
   - Verified with `rg` that `MyChill` is present in source and generated HTML titles.
+  - Verified the GitHub repo with `gh repo view ryanyeong/MyChill`.
 in_progress:
   - none
-blockers:
-  - Need GitHub CLI authentication before creating the remote repository and pushing.
-next_step: After `gh auth status` succeeds, run `gh repo create MyChill --public --source=. --remote=origin --push` from the project root.
+blockers: none
+next_step: Commit and push this memory update if desired.
