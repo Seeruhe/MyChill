@@ -1,5 +1,5 @@
 active_area: AI security boundary
-current_task: Move Groq API key usage behind a backend route.
+current_task: Confirm Groq key is no longer exposed in GitHub/frontend code.
 relevant_files:
   - api/ask-artist.js
   - src/services/groqService.ts
@@ -7,7 +7,7 @@ relevant_files:
   - vercel.json
 assumptions:
   - The project uses Groq, not Grok, for the AI assistant.
-  - Groq calls should be server-side for production because the repo is public and deployed to Vercel.
+  - Groq calls should be server-side because the repo is public and frontend bundles are inspectable.
 done:
   - Added the Nujabes/Shing02 Luv(sic) sequence to the local track catalog.
   - Replaced mojibake Chinese labels in App and IntroOverlay with readable Chinese.
@@ -50,8 +50,11 @@ done:
   - Updated README to note that local AI API testing should use `vercel dev --listen 3000`.
   - Rewrote mojibake `AGENTS.md` with the current backend Groq boundary.
   - Removed stale Gemini key instructions from the stack README and env example.
+  - Pushed the backend security migration to GitHub in commits `e359f73` and `eea8ac2`.
+  - User chose to ignore Vercel deployment for now and only require the GitHub/frontend exposure risk to be addressed.
 in_progress:
-  - commit, push, and deploy the backend migration
+  - none
 blockers:
-  - The previously used Groq key should still be rotated after deploy because old frontend deployments may have exposed it.
-next_step: Commit and push the server-side Groq boundary, then redeploy Vercel production.
+  - Vercel production may still be serving the older deployment until redeployed.
+  - The previously used Groq key should still be rotated because an old frontend deployment and chat history may have exposed it.
+next_step: When ready, rotate the Groq key and redeploy Vercel so production uses `/api/ask-artist`.
