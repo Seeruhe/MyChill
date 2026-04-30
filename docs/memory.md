@@ -42,6 +42,7 @@ done:
   - Confirmed no tracked source file contains a real `gsk_` key.
   - Confirmed the previous Vite config injected `GROQ_API_KEY` into the frontend bundle, creating production exposure risk.
   - Added `api/ask-artist.js` as the server-side Groq/Llama route.
+  - Updated the route to Vercel's Web Standard `POST(request)` function style after the first production deploy returned an early platform error.
   - Updated `src/services/groqService.ts` so the browser calls `/api/ask-artist` instead of Groq directly.
   - Removed `GROQ_API_KEY` injection from the root Vite config.
   - Removed the unused `GEMINI_API_KEY` injection from the 3D stack Vite config as additional hardening.

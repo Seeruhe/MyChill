@@ -38,6 +38,6 @@ Decision: Move Groq/Llama assistant calls from the Vite frontend bundle to the V
 
 Reason: The previous Vite `define` configuration injected `GROQ_API_KEY` into browser JavaScript at build time. That is acceptable only for quick demos, not for a public production deployment.
 
-Impact: `src/services/groqService.ts` now sends artist questions to the local API route. `api/ask-artist.js` reads `GROQ_API_KEY` server-side, builds the archivist prompt, calls Groq, and returns only the assistant answer to the browser.
+Impact: `src/services/groqService.ts` now sends artist questions to the local API route. `api/ask-artist.js` uses Vercel's Web Standard function signature, reads `GROQ_API_KEY` server-side, builds the archivist prompt, calls Groq, and returns only the assistant answer to the browser.
 
 Follow-up hardening: Remove unused frontend AI-key injection from the `3d-album-stack` Vite config as well, so future environment variables are not accidentally bundled into the iframe app.

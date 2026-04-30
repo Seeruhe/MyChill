@@ -1,38 +1,37 @@
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
 
-function sendJson(res, statusCode, body) {
-  res.statusCode = statusCode;
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.setHeader("Cache-Control", "no-store");
-  res.end(JSON.stringify(body));
+function jsonResponse(body, status = 200) {
+  return Response.json(body, {
+    status,
+    headers: {
+      "Cache-Control": "no-store",
+    },
+  });
 }
 
 function cleanText(value, maxLength) {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
 }
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    sendJson(res, 405, {error: "Method not allowed"});
-    return;
-  }
+export function GET() {
+  return jsonResponse({error: "Method not allowed"}, 405);
+}
 
+export async function POST(request) {
   const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
-    sendJson(res, 500, {error: "Groq API key is not configured."});
-    return;
+    return jsonResponse({error: "Groq API key is not configured."}, 500);
   }
 
-  const artistName = cleanText(req.body?.artist, 120);
-  const question = cleanText(req.body?.question, 1000);
-  const language = cleanText(req.body?.language, 40) || "English";
+  const body = await request.json().catch(() => ({}));
+  const artistName = cleanText(body?.artist, 120);
+  const question = cleanText(body?.question, 1000);
+  const language = cleanText(body?.language, 40) || "English";
 
   if (!artistName || !question) {
-    sendJson(res, 400, {error: "Artist and question are required."});
-    return;
+    return jsonResponse({error: "Artist and question are required."}, 400);
   }
 
   const prompt = `You are a knowledgeable music archivist for a retro-style jazz hip-hop radio station called "Chill FM".
@@ -70,19 +69,18 @@ Keep the response under 150 words and maintain a cool, lo-fi aesthetic in your t
 
     if (!response.ok) {
       console.error("Groq API Error:", data?.error?.message || response.statusText);
-      sendJson(res, 502, {error: "Error connecting to the archive."});
-      return;
+      return jsonResponse({error: "Error connecting to the archive."}, 502);
     }
 
     const answer = data?.choices?.[0]?.message?.content?.trim();
 
-    sendJson(res, 200, {
+    return jsonResponse({
       answer:
         answer ||
         "The archive is currently unresponsive. Please try again later.",
     });
   } catch (error) {
     console.error("Groq API Error:", error);
-    sendJson(res, 502, {error: "Error connecting to the archive."});
+    return jsonResponse({error: "Error connecting to the archive."}, 502);
   }
 }
