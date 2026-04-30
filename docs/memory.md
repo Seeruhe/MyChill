@@ -1,10 +1,8 @@
-active_area: AI security boundary
-current_task: Confirm Groq key is no longer exposed in GitHub/frontend code.
+active_area: repository cleanup
+current_task: Remove redundant AGENTS_final.md from the public repository.
 relevant_files:
-  - api/ask-artist.js
-  - src/services/groqService.ts
-  - vite.config.ts
-  - vercel.json
+  - AGENTS_final.md
+  - docs/memory.md
 assumptions:
   - The project uses Groq, not Grok, for the AI assistant.
   - Groq calls should be server-side because the repo is public and frontend bundles are inspectable.
@@ -52,9 +50,11 @@ done:
   - Removed stale Gemini key instructions from the stack README and env example.
   - Pushed the backend security migration to GitHub in commits `e359f73` and `eea8ac2`.
   - User chose to ignore Vercel deployment for now and only require the GitHub/frontend exposure risk to be addressed.
+  - Synced the user's remote README update without modifying it.
+  - Removed redundant `AGENTS_final.md`; `AGENTS.md` and `docs/` are the active collaboration docs.
 in_progress:
   - none
 blockers:
   - Vercel production may still be serving the older deployment until redeployed.
   - The previously used Groq key should still be rotated because an old frontend deployment and chat history may have exposed it.
-next_step: When ready, rotate the Groq key and redeploy Vercel so production uses `/api/ask-artist`.
+next_step: Push the `AGENTS_final.md` deletion to GitHub.
