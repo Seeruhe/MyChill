@@ -29,11 +29,15 @@ done:
   - Enlarged the Now Playing track title and status text, using the freed control-row space.
   - Renamed the root Vite HTML title, 3D stack HTML title, and app metadata name to `MyChill`.
   - Verified the old `My Google AI Studio App` title no longer appears outside generated or source output.
-  - GitHub push is blocked because `C:\Users\ryan\Documents\chill-fm` is not currently a git repository and `gh` is not installed on this machine.
+  - Initialized a local git repository on branch `main`.
+  - Added generated build outputs and local deployment/config secrets to `.gitignore`.
+  - Created the first local commit `cb5092d Initial MyChill app`.
+  - Installed GitHub CLI `gh` via winget.
+  - GitHub push is blocked until `gh auth login` is completed for the user's GitHub account.
   - Verified with npm run lint and npm run build.
   - Verified with `rg` that `MyChill` is present in source and generated HTML titles.
 in_progress:
   - none
 blockers:
-  - Need a GitHub repository URL or a working GitHub CLI/session before pushing.
-next_step: Initialize/link a git repository and push after the GitHub remote is provided or `gh` is installed and authenticated.
+  - Need GitHub CLI authentication before creating the remote repository and pushing.
+next_step: After `gh auth status` succeeds, run `gh repo create MyChill --public --source=. --remote=origin --push` from the project root.
