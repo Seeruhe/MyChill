@@ -32,23 +32,14 @@ Reason: The 3D album stack remains iframe-isolated, so theme state should cross 
 
 Impact: `StackScreen` owns the light/dark toggle and sends `{ type: "STACK_THEME", theme }`; `3d-album-stack` listens for that message and applies `data-theme` to its root wrapper.
 
-## 2026-04-30: Server-Side Groq Boundary
+## 2026-05-07: AI Provider and Server-Side Boundary
 
-Decision: Move Groq/Llama assistant calls from the Vite frontend bundle to the Vercel serverless API route `/api/ask-artist`.
+Decision: The archivist assistant uses LongCat (`LongCat-Flash-Chat`) via LongCat's OpenAI-compatible endpoint at `https://api.longcat.chat/openai/v1/chat/completions`. All AI provider calls cross a server-side boundary through `/api/ask-artist`; provider keys are never bundled into the frontend.
 
-Reason: The previous Vite `define` configuration injected `GROQ_API_KEY` into browser JavaScript at build time. That is acceptable only for quick demos, not for a public production deployment.
-
-Impact: `src/services/groqService.ts` now sends artist questions to the local API route. `api/ask-artist.js` uses Vercel's Web Standard function signature, reads `GROQ_API_KEY` server-side, builds the archivist prompt, calls Groq, and returns only the assistant answer to the browser.
-
-Follow-up hardening: Remove unused frontend AI-key injection from the `3d-album-stack` Vite config as well, so future environment variables are not accidentally bundled into the iframe app.
-
-## 2026-05-07: Switched AI Provider from Groq to LongCat
-
-Decision: Migrate the archivist assistant from Groq (`llama-3.3-70b-versatile`) to LongCat (`LongCat-Flash-Chat`) via LongCat's OpenAI-compatible endpoint at `https://api.longcat.chat/openai/v1/chat/completions`.
-
-Reason: User-driven provider switch. LongCat exposes the same OpenAI Chat Completions shape, so the migration is a server-only edit; the frontend wrapper and request contract are unchanged.
+Reason: The repository is public and frontend bundles are inspectable, so provider keys must never reach browser JavaScript. LongCat exposes the standard OpenAI Chat Completions shape, so the integration is small on the server side.
 
 Impact:
-- `api/ask-artist.js` now reads `LONGCAT_API_KEY` and posts to the LongCat endpoint with model `LongCat-Flash-Chat`. Two optional overrides exist: `LONGCAT_API_URL` and `LONGCAT_MODEL`.
-- `.env.example` and Vercel production env now use `LONGCAT_API_KEY`. The legacy `GROQ_API_KEY` is no longer referenced in code.
-- `src/services/groqService.ts` was renamed to `src/services/aiService.ts` (provider-neutral) and the import in `src/App.tsx` was updated. The wrapper has no provider-specific logic; it only calls `/api/ask-artist`.
+- `api/ask-artist.js` reads `LONGCAT_API_KEY` and posts to the LongCat endpoint with model `LongCat-Flash-Chat`. Two optional overrides exist: `LONGCAT_API_URL` and `LONGCAT_MODEL`.
+- `.env.example` and Vercel production env use `LONGCAT_API_KEY`.
+- `src/services/aiService.ts` is the browser-side wrapper. It only calls `/api/ask-artist` and contains no provider-specific logic.
+- The `3d-album-stack` Vite config does not inject AI provider keys into its iframe bundle.
