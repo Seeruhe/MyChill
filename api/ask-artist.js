@@ -1,5 +1,7 @@
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = "llama-3.3-70b-versatile";
+const LONGCAT_API_URL =
+  process.env.LONGCAT_API_URL ||
+  "https://api.longcat.chat/openai/v1/chat/completions";
+const LONGCAT_MODEL = process.env.LONGCAT_MODEL || "LongCat-Flash-Chat";
 
 function jsonResponse(body, status = 200) {
   return Response.json(body, {
@@ -19,10 +21,10 @@ export function GET() {
 }
 
 export async function POST(request) {
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = process.env.LONGCAT_API_KEY;
 
   if (!apiKey) {
-    return jsonResponse({error: "Groq API key is not configured."}, 500);
+    return jsonResponse({error: "LongCat API key is not configured."}, 500);
   }
 
   const body = await request.json().catch(() => ({}));
@@ -41,14 +43,14 @@ IMPORTANT: Please provide your response in ${language}.
 Keep the response under 150 words and maintain a cool, lo-fi aesthetic in your tone.`;
 
   try {
-    const response = await fetch(GROQ_API_URL, {
+    const response = await fetch(LONGCAT_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: GROQ_MODEL,
+        model: LONGCAT_MODEL,
         messages: [
           {
             role: "system",
@@ -68,7 +70,10 @@ Keep the response under 150 words and maintain a cool, lo-fi aesthetic in your t
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      console.error("Groq API Error:", data?.error?.message || response.statusText);
+      console.error(
+        "LongCat API Error:",
+        data?.error?.message || response.statusText,
+      );
       return jsonResponse({error: "Error connecting to the archive."}, 502);
     }
 
@@ -80,7 +85,7 @@ Keep the response under 150 words and maintain a cool, lo-fi aesthetic in your t
         "The archive is currently unresponsive. Please try again later.",
     });
   } catch (error) {
-    console.error("Groq API Error:", error);
+    console.error("LongCat API Error:", error);
     return jsonResponse({error: "Error connecting to the archive."}, 502);
   }
 }

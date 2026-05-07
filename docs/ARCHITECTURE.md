@@ -6,8 +6,8 @@ Chill FM is a Vite + React single page app with a second isolated 3D album scree
 
 - `src/main.tsx` mounts React.
 - `src/App.tsx` owns the main runtime state: playback, theme, language, layered screen routing, gallery selection, artist panels, and AI modal state.
-- `src/services/groqService.ts` owns the browser-side assistant request wrapper and calls the server API.
-- `api/ask-artist.js` owns the Groq/Llama request, prompt construction, and server-side `GROQ_API_KEY` access.
+- `src/services/aiService.ts` owns the browser-side assistant request wrapper and calls the server API. Provider-neutral by design.
+- `api/ask-artist.js` owns the LongCat (OpenAI-compatible) request, prompt construction, and server-side `LONGCAT_API_KEY` access.
 - `3d-album-stack` is built as an npm workspace and copied into the main static output by `scripts/build-with-stack.mjs`.
 - The root `package.json` owns dependency installation and the single root `package-lock.json`.
 
@@ -25,7 +25,7 @@ Chill FM is a Vite + React single page app with a second isolated 3D album scree
 - Keep the 3D album stack in an iframe to preserve its own interaction model.
 - Home and Stack are independent layered screens, not a shared horizontal `200vw` layout. Home may stay mounted for playback continuity, while Stack appears as a fixed overlay.
 - Stack theme changes are coordinated from the parent `StackScreen` to the iframe via `postMessage` with `type: "STACK_THEME"`; the iframe owns its own CSS theme rendering.
-- Groq access must cross a server boundary through `/api/ask-artist`; do not inject `GROQ_API_KEY` into Vite or frontend bundles.
+- LongCat access must cross a server boundary through `/api/ask-artist`; do not inject `LONGCAT_API_KEY` into Vite or frontend bundles.
 - The stack workspace should not inject unused AI provider keys into its frontend bundle.
 - Use npm workspaces for dependency sharing; do not add a separate `3d-album-stack/package-lock.json`.
 - Prefer small extractions from `App.tsx` over large state-management rewrites until the player logic is isolated intentionally.

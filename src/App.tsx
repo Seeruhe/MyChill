@@ -13,7 +13,7 @@ import { GALLERY_EDGE_PADDING, GALLERY_HEIGHT } from './components/gallery/galle
 import { ARTISTS, TRACKS } from './data/musicLibrary';
 import { drawMatrixText, SEG } from './lib/dotMatrix';
 import { loadYouTubeIframeApi } from './lib/youtubeIframeApi';
-import { askAboutArtist } from './services/groqService';
+import { askAboutArtist } from './services/aiService';
 import type { ArtistProfile, Track } from './types/music';
 import { formatTime } from './utils/time';
 

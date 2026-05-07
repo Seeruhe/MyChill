@@ -41,3 +41,14 @@ Reason: The previous Vite `define` configuration injected `GROQ_API_KEY` into br
 Impact: `src/services/groqService.ts` now sends artist questions to the local API route. `api/ask-artist.js` uses Vercel's Web Standard function signature, reads `GROQ_API_KEY` server-side, builds the archivist prompt, calls Groq, and returns only the assistant answer to the browser.
 
 Follow-up hardening: Remove unused frontend AI-key injection from the `3d-album-stack` Vite config as well, so future environment variables are not accidentally bundled into the iframe app.
+
+## 2026-05-07: Switched AI Provider from Groq to LongCat
+
+Decision: Migrate the archivist assistant from Groq (`llama-3.3-70b-versatile`) to LongCat (`LongCat-Flash-Chat`) via LongCat's OpenAI-compatible endpoint at `https://api.longcat.chat/openai/v1/chat/completions`.
+
+Reason: User-driven provider switch. LongCat exposes the same OpenAI Chat Completions shape, so the migration is a server-only edit; the frontend wrapper and request contract are unchanged.
+
+Impact:
+- `api/ask-artist.js` now reads `LONGCAT_API_KEY` and posts to the LongCat endpoint with model `LongCat-Flash-Chat`. Two optional overrides exist: `LONGCAT_API_URL` and `LONGCAT_MODEL`.
+- `.env.example` and Vercel production env now use `LONGCAT_API_KEY`. The legacy `GROQ_API_KEY` is no longer referenced in code.
+- `src/services/groqService.ts` was renamed to `src/services/aiService.ts` (provider-neutral) and the import in `src/App.tsx` was updated. The wrapper has no provider-specific logic; it only calls `/api/ask-artist`.

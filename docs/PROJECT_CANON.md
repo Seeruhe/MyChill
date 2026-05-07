@@ -86,7 +86,7 @@ The root package owns dependency installation and the root `package-lock.json`.
 - Keep behavior stable while extracting modules.
 - Preserve iframe isolation for `3d-album-stack` unless the human explicitly approves a deeper integration.
 - Keep playback state stable and avoid remounting the playback host during visual UI changes.
-- Keep Groq/AI logic behind `src/services/groqService.ts` unless a backend migration is explicitly planned.
+- Keep AI provider logic behind `src/services/aiService.ts` unless a backend migration is explicitly planned.
 - Prefer local curated content for music stories and metadata; runtime network fetching should be limited and resilient.
 
 ## Code Organization Rules
@@ -102,7 +102,7 @@ When reducing `App.tsx`, extract stable UI islands first. Do not split the playb
 
 ## AI Rules
 
-- The AI assistant uses Groq with Llama 3.3 70B.
+- The AI assistant uses LongCat with `LongCat-Flash-Chat` (OpenAI-compatible API at `https://api.longcat.chat/openai/v1`).
 - The assistant persona should remain archival, music-aware, and concise.
 - Do not hardcode real API keys in source files.
 - The current frontend-injected API key pattern is acceptable for local/demo use, but production security should move AI calls to a server boundary.

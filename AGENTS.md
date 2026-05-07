@@ -7,7 +7,7 @@
 - 项目名称：`MyChill` / `Chill FM`
 - 类型：Vite + React 19 + TypeScript 单页前端应用，包含 `3d-album-stack` npm workspace
 - 风格：复古电台 / 爵士嘻哈 / dot-matrix 视觉风格
-- AI 能力：通过后端 API 调用 Groq `Llama 3.3 70B`，为艺术家问答和 “Archivist Assistant” 提供内容
+- AI 能力：通过后端 API 调用 LongCat `LongCat-Flash-Chat`（OpenAI 兼容协议），为艺术家问答和 “Archivist Assistant” 提供内容
 
 当前应用的核心体验包括：
 
@@ -23,10 +23,10 @@
   主应用状态协调位置，包含播放、主题、语言、页面切换、gallery、artist panel 和 AI modal 等主流程。除非任务明确要求重构，否则优先做局部、小范围修改。
 
 - `api/ask-artist.js`
-  Vercel serverless API。这里读取服务端 `GROQ_API_KEY`、构建提示词、调用 Groq，并只把 AI 回复返回给前端。
+  Vercel serverless API。这里读取服务端 `LONGCAT_API_KEY`、构建提示词、调用 LongCat，并只把 AI 回复返回给前端。可选用 `LONGCAT_API_URL` 与 `LONGCAT_MODEL` 覆盖默认端点和模型。
 
-- `src/services/groqService.ts`
-  浏览器端 AI 请求封装。它只能调用 `/api/ask-artist`，不要在这里直接访问 Groq 或读取真实 API key。
+- `src/services/aiService.ts`
+  浏览器端 AI 请求封装。它只能调用 `/api/ask-artist`，不要在这里直接访问 LongCat 或读取真实 API key。provider-neutral，切换上游 provider 不需要改这里。
 
 - `src/index.css`
   全局样式、主题 token、动画 keyframes、自定义视觉效果。视觉修改优先复用现有变量，例如 `--color-accent`、`--color-bg` 等。
@@ -35,7 +35,7 @@
   React 应用挂载入口，通常无需改动。
 
 - `vite.config.ts`
-  Vite、React、Tailwind 与路径别名配置。不要在这里注入 `GROQ_API_KEY` 或其它真实 provider key。
+  Vite、React、Tailwind 与路径别名配置。不要在这里注入 `LONGCAT_API_KEY` 或其它真实 provider key。
 
 - `3d-album-stack/`
   独立 3D album stack workspace，通过 iframe 在主应用中加载。保留其原始滚动、预览、完整展开交互。
@@ -66,11 +66,11 @@
 
 ## 4. 环境变量与安全
 
-- 本地和 Vercel 需要提供服务端环境变量 `GROQ_API_KEY`
+- 本地和 Vercel 需要提供服务端环境变量 `LONGCAT_API_KEY`（可选 `LONGCAT_API_URL`、`LONGCAT_MODEL`）
 - 示例见 `.env.example`
 - 不要把真实密钥写入源码、提交到仓库或硬编码到组件中
 - 不要用 Vite `define`、`VITE_` 前缀或其它方式把 provider key 注入前端 bundle
-- Groq 调用必须通过 `/api/ask-artist` 这样的服务端边界完成
+- LongCat 调用必须通过 `/api/ask-artist` 这样的服务端边界完成
 
 ## 5. 当前代码特征
 
@@ -93,7 +93,7 @@
 - 如果必须拆分 `src/App.tsx`，先确认收益明显，再拆到少量高价值组件
 - 修改 AI 相关能力时，同时检查：
   - `api/ask-artist.js`
-  - `src/services/groqService.ts`
+  - `src/services/aiService.ts`
   - `src/App.tsx` 中发起请求与展示响应的部分
 - 修改视觉样式时，同时检查：
   - `src/index.css`
@@ -129,7 +129,7 @@
 
 1. 先读 `README.md`、`package.json` 和 `docs/PROJECT_CANON.md`
 2. 再读 `src/App.tsx` 把页面主流程看清
-3. 涉及 AI 时读 `api/ask-artist.js` 与 `src/services/groqService.ts`
+3. 涉及 AI 时读 `api/ask-artist.js` 与 `src/services/aiService.ts`
 4. 涉及视觉时读 `src/index.css`
 5. 修改后至少跑 `npm run lint` 和 `npm run build`
 
